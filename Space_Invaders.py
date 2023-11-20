@@ -4,6 +4,7 @@ from laser_turret import Laser_Turret
 from pygame.sprite import Group
 
 
+
 def run():
     pygame.init()
     screen = pygame.display.set_mode((700, 800))
@@ -11,13 +12,17 @@ def run():
     bg_color = (0, 0, 0)
     laser_turret = Laser_Turret(screen)
     bullets = Group()
+    aliens = Group()
+    controls.create_army(screen, aliens)
+
 
 
     while True:
         controls.events(screen, laser_turret, bullets)
         laser_turret.update_LT()
-        controls.screen_update(bg_color, screen, laser_turret, bullets)
+        controls.screen_update(bg_color, screen, laser_turret, aliens, bullets)
         controls.update_bullets(bullets)
+        controls.update_aliens(aliens)
 
 
 
