@@ -2,6 +2,7 @@ import pygame
 import sys
 from bullet import Bullet
 from alien import Alien
+import time
 
 def events(screen, laser_turret, bullets):
     # Обработка событий
@@ -39,16 +40,43 @@ def screen_update(bg_color, screen, laser_turret, aliens, bullets):
     aliens.draw(screen)
     pygame.display.flip()
 
-def update_bullets(bullets):
+def update_bullets(screen, aliens, bullets):
     # Обновление позиции пуль
     bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
+    collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+    if len(aliens) == 0:
+        bullets.empty()
+        create_army(screen, aliens)
 
-def update_aliens(aliens):
+
+def lt_kill(stats, screen, laser_turret, aliens, bullets):
+    """Столкновение пушки и пришельцев"""
+    stats.lt_left -= 1
+    aliens.empty()
+    bullets.empty()
+    create_army(screen, aliens)
+    laser_turret.create_lt()
+    time.sleep(2)
+
+
+def update_aliens(stats, screen, laser_turret, aliens, bullets):
     # Обновляет позиции инопланетян
     aliens.update()
+    if pygame.sprite.spritecollideany(laser_turret, aliens):
+        lt_kill(stats, screen, laser_turret, aliens, bullets)
+    aliens_check(stats, screen, laser_turret, aliens, bullets)
+
+def aliens_check(stats, screen, laser_turret, aliens, bullets):
+    """Проверка на соприкосновение пришельцев с краем экрана"""
+    screen_rect = screen.get_rect()
+    for alien in aliens.sprites():
+        if alien.rect.bottom >= screen_rect.bottom:
+            lt_kill(stats, screen, laser_turret, aliens, bullets)
+            break
+
 
 def create_army(screen, aliens):
     # Создание армии пришельцев

@@ -2,7 +2,7 @@ import controls
 import pygame
 from laser_turret import Laser_Turret
 from pygame.sprite import Group
-
+from stats import Stats
 
 
 def run():
@@ -14,16 +14,14 @@ def run():
     bullets = Group()
     aliens = Group()
     controls.create_army(screen, aliens)
-
-
+    stats = Stats()
 
     while True:
         controls.events(screen, laser_turret, bullets)
         laser_turret.update_LT()
         controls.screen_update(bg_color, screen, laser_turret, aliens, bullets)
-        controls.update_bullets(bullets)
-        controls.update_aliens(aliens)
-
+        controls.update_bullets(screen, aliens, bullets)
+        controls.update_aliens(stats, screen, laser_turret, aliens, bullets)
 
 
 run()

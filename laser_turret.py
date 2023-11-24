@@ -28,3 +28,7 @@ class Laser_Turret():
             self.center -= 1
 
         self.rect.centerx = self.center
+
+    def create_lt(self):
+        """размещает пушку по центру внизу"""
+        self.center = self.screen_rect.centerx
