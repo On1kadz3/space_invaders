@@ -1,5 +1,6 @@
 import pygame
 
+
 class Alien(pygame.sprite.Sprite):
     # Класс одного пришельца
     def __init__(self, screen):
@@ -21,5 +22,3 @@ class Alien(pygame.sprite.Sprite):
         # Перемещение пришельцев
         self.y += 0.1
         self.rect.y = self.y
-
-
