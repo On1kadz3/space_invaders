@@ -5,8 +5,9 @@ from alien import Alien
 import time
 
 
-def events(screen, laser_turret, bullets):
+def events(screen, laser_turret, bullets, vol, count_p, flPause):
     # Обработка событий
+    some_Pause = flPause
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -21,8 +22,15 @@ def events(screen, laser_turret, bullets):
             elif event.key == pygame.K_UP:
                 new_bullet = Bullet(screen, laser_turret)
                 bullets.add(new_bullet)
-
-
+            # Запуск или пауза музыки
+            elif event.key == pygame.K_SPACE:
+                some_Pause = not some_Pause
+                print(some_Pause)
+                if some_Pause:
+                    pygame.mixer.music.pause()
+                else:
+                    pygame.mixer.music.unpause()
+        
         elif event.type == pygame.KEYUP:
             # Право
             if event.key == pygame.K_RIGHT:
@@ -30,6 +38,9 @@ def events(screen, laser_turret, bullets):
             # Лево
             elif event.key == pygame.K_LEFT:
                 laser_turret.move_left = False
+            elif event.key == pygame.K_SPACE:
+                flPause = flPause
+                print(flPause)
 
 
 def screen_update(bg_color, screen, stats, scores, laser_turret, aliens, bullets):
