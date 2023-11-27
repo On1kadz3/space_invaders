@@ -3,11 +3,14 @@ import sys
 from bullet import Bullet
 from alien import Alien
 import time
+from menu import Menu
+
+mute_sound = 0
 
 
-def events(screen, laser_turret, bullets, vol, count_p, flPause):
+def events(screen, laser_turret, bullets):
     # Обработка событий
-    some_Pause = flPause
+    global mute_sound
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -18,19 +21,19 @@ def events(screen, laser_turret, bullets, vol, count_p, flPause):
             # Лево
             elif event.key == pygame.K_LEFT:
                 laser_turret.move_left = True
+            elif event.key == pygame.K_m:
+                mute_sound += 1
             # Выстрел
             elif event.key == pygame.K_UP:
                 new_bullet = Bullet(screen, laser_turret)
+                if (mute_sound % 2) == 1:
+                    pygame.mixer.Sound("sounds/laser-piu.wav").play()
                 bullets.add(new_bullet)
-            # Запуск или пауза музыки
+            # пауза музыки
             elif event.key == pygame.K_SPACE:
-                some_Pause = not some_Pause
-                print(some_Pause)
-                if some_Pause:
-                    pygame.mixer.music.pause()
-                else:
-                    pygame.mixer.music.unpause()
-        
+                pygame.mixer.music.pause()
+            elif event.key == pygame.K_RSHIFT:
+                pygame.mixer.music.unpause()
         elif event.type == pygame.KEYUP:
             # Право
             if event.key == pygame.K_RIGHT:
@@ -38,12 +41,26 @@ def events(screen, laser_turret, bullets, vol, count_p, flPause):
             # Лево
             elif event.key == pygame.K_LEFT:
                 laser_turret.move_left = False
-            elif event.key == pygame.K_SPACE:
-                flPause = flPause
-                print(flPause)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            menu = Menu(screen)
+            mouse_pos = pygame.mouse.get_pos()
+            start_button_pos = menu.start_button_pos
+            exit_button_pos = menu.exit_button_pos
+            start_button = menu.start_button_rect
+            exit_button = menu.exit_button_rect
+            if start_button_pos[0] <= mouse_pos[0] <= start_button_pos[0] + start_button.width and \
+                start_button_pos[1] <= mouse_pos[1] <= start_button_pos[1] + start_button.height:
+                a = 1
+            elif exit_button_pos[0] <= mouse_pos[0] <= exit_button_pos[0] + exit_button.width and \
+                exit_button_pos[1] <= mouse_pos[1] <= exit_button_pos[1] + exit_button.height:
+                a = 0
 
 
-def screen_update(bg_color, screen, stats, scores, laser_turret, aliens, bullets):
+
+
+
+
+def screen_update(bg_color, screen, stats, scores, laser_turret, aliens, bullets, FPS):
     """ Обновление экрана """
     screen.fill(bg_color)
     scores.show_score()
@@ -52,6 +69,7 @@ def screen_update(bg_color, screen, stats, scores, laser_turret, aliens, bullets
     laser_turret.output()
     aliens.draw(screen)
     pygame.display.flip()
+    pygame.time.Clock().tick(FPS)
 
 
 def update_bullets(screen, stats, scores, aliens, bullets):

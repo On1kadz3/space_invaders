@@ -29,9 +29,9 @@ class LaserTurret(Sprite):
     def update_LT(self):
         # Обновление позиции
         if self.move_right and self.rect.right < self.screen_rect.right:
-            self.center += 1
+            self.center += 2
         if self.move_left and self.rect.left > self.screen_rect.left:
-            self.center -= 1
+            self.center -= 2
 
         self.rect.centerx = self.center
 

@@ -9,7 +9,7 @@ class Bullet(pygame.sprite.Sprite):
         self.screen = screen
         self.rect = pygame.Rect(0, 0, 2, 10)
         self.color = 0, 183, 239
-        self.speed = 4.5
+        self.speed = 9.5
         self.rect.centerx = laser_turret.rect.centerx
         self.rect.top = laser_turret.rect.top
         self.y = float(self.rect.y)

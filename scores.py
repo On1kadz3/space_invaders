@@ -18,14 +18,14 @@ class Scores:
 
     def score_to_image(self):
         """ Текст счёта в графичесоке изображение """
-        self.score_image = self.font.render(str(self.stats.score), True, self.text_color, (0, 0, 0))
+        self.score_image = self.font.render(str("Текущий счёт: "+str(self.stats.score)), True, self.text_color, (0, 0, 0))
         self.score_rect = self.score_image.get_rect()
         self.score_rect.left = self.screen_rect.left + 25
         self.score_rect.top = 15
 
     def highscore_to_image(self):
         """Текст рекорда в граф.изображение"""
-        self.hi_score_image = self.font.render(str(self.stats.highscore),
+        self.hi_score_image = self.font.render(str("Лучший рекорд: "+str(self.stats.highscore)),
                                                True,
                                                self.text_color,
                                                (0, 0, 0))
