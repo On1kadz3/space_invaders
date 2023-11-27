@@ -1,5 +1,7 @@
 import pygame
 import sys
+
+import stats
 from bullet import Bullet
 from alien import Alien
 import time
@@ -8,7 +10,7 @@ from menu import Menu
 mute_sound = 0
 
 
-def events(screen, laser_turret, bullets):
+def events(screen, laser_turret, bullets, stats, menu):
     # Обработка событий
     global mute_sound
     for event in pygame.event.get():
@@ -41,26 +43,27 @@ def events(screen, laser_turret, bullets):
             # Лево
             elif event.key == pygame.K_LEFT:
                 laser_turret.move_left = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            menu = Menu(screen)
+        elif event.type == pygame.MOUSEBUTTONDOWN and not(stats.run_game):
             mouse_pos = pygame.mouse.get_pos()
             start_button_pos = menu.start_button_pos
             exit_button_pos = menu.exit_button_pos
             start_button = menu.start_button_rect
             exit_button = menu.exit_button_rect
             if start_button_pos[0] <= mouse_pos[0] <= start_button_pos[0] + start_button.width and \
-                start_button_pos[1] <= mouse_pos[1] <= start_button_pos[1] + start_button.height:
-                a = 1
+                    start_button_pos[1] <= mouse_pos[1] <= start_button_pos[1] + start_button.height:
+                stats.start_game()
             elif exit_button_pos[0] <= mouse_pos[0] <= exit_button_pos[0] + exit_button.width and \
-                exit_button_pos[1] <= mouse_pos[1] <= exit_button_pos[1] + exit_button.height:
-                a = 0
+                    exit_button_pos[1] <= mouse_pos[1] <= exit_button_pos[1] + exit_button.height:
+                sys.exit()
 
 
+def start_screen(bg_color, screen, menu):
+    screen.fill(bg_color)
+    menu.show_buttons()
+    pygame.display.flip()
 
 
-
-
-def screen_update(bg_color, screen, stats, scores, laser_turret, aliens, bullets, FPS):
+def screen_update(bg_color, screen, stats, scores, menu, laser_turret, aliens, bullets, FPS):
     """ Обновление экрана """
     screen.fill(bg_color)
     scores.show_score()

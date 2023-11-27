@@ -7,10 +7,13 @@ class Stats:
     def __init__(self):
         """Инициализания статистики"""
         self.reset_stats()
-        self.run_game = True
+        self.start_game()
+        self.run_game = False
         with open('highscore.txt', 'r') as f:
             self.highscore = int(f.readline())
 
+    def start_game(self):
+        self.run_game = True
     def reset_stats(self):
         """статистика, изменяющаяся во время игры"""
         self.lt_left = 3

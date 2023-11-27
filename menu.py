@@ -28,7 +28,7 @@ class Menu:
         self.start_button_pos = (self.screen_rect.width // 2 - self.start_button_rect.x // 2,
                                  self.screen_rect.height // 2 - self.start_button_rect.y // 2)
         self.exit_button_pos = (self.screen_rect.width // 2 - self.exit_button_rect.x // 2,
-                                self.screen_rect.height // 2 - self.exit_button_rect.y // 2 + 50)
+                                self.screen_rect.height // 2 - self.exit_button_rect.y // 2 + 100)
 
     def show_buttons(self):
         self.screen.blit(self.start_button_img, self.start_button_pos)
