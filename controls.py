@@ -5,7 +5,6 @@ import stats
 from bullet import Bullet
 from alien import Alien
 import time
-from menu import Menu
 
 mute_sound = 0
 
@@ -43,7 +42,7 @@ def events(screen, laser_turret, bullets, stats, menu):
             # Лево
             elif event.key == pygame.K_LEFT:
                 laser_turret.move_left = False
-        elif event.type == pygame.MOUSEBUTTONDOWN and not(stats.run_game):
+        elif event.type == pygame.MOUSEBUTTONDOWN and not stats.run_game:
             mouse_pos = pygame.mouse.get_pos()
             start_button_pos = menu.start_button_pos
             exit_button_pos = menu.exit_button_pos
@@ -60,6 +59,12 @@ def events(screen, laser_turret, bullets, stats, menu):
 def start_screen(bg_color, screen, menu):
     screen.fill(bg_color)
     menu.show_buttons()
+    pygame.display.flip()
+
+
+def game_over_screen(bg_color, screen, menu):
+    screen.fill(bg_color)
+    menu.show_over()
     pygame.display.flip()
 
 
@@ -84,44 +89,55 @@ def update_bullets(screen, stats, scores, aliens, bullets):
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     if collisions:
         for aliens in collisions.values():
-            stats.score += 50 * len(aliens)
+            stats.score += int(50 * len(aliens) * stats.level * 0.5)
         scores.score_to_image()
         check_hi_score(stats, scores)
         scores.draw_LT()
     if len(aliens) == 0:
         bullets.empty()
+        stats.levelup(scores)
         create_army(screen, aliens)
 
 
-def lt_kill(stats, screen, scores, laser_turret, aliens, bullets):
+def lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu):
     """Столкновение пушки и пришельцев"""
     if stats.lt_left > 0:
         stats.lt_left -= 1
         scores.draw_LT()
-        aliens.empty()
-        bullets.empty()
         create_army(screen, aliens)
         laser_turret.create_lt()
         time.sleep(1.5)
+        aliens.empty()
+        bullets.empty()
     else:
         stats.run_game = False
-        sys.exit()
+        stats.over_game()
 
 
-def update_aliens(stats, screen, scores, laser_turret, aliens, bullets):
+def restart_game(scores, stats, aliens, bullets, laser_turret):
+    scores.draw_LT()
+    aliens.empty()
+    bullets.empty()
+    laser_turret.create_lt()
+    stats.reset_stats()
+
+
+
+def update_aliens(stats, screen, scores, laser_turret, aliens, bullets, menu):
     # Обновляет позиции инопланетян
-    aliens.update()
+    aliens.update(stats)
     if pygame.sprite.spritecollideany(laser_turret, aliens):
-        lt_kill(stats, screen, scores, laser_turret, aliens, bullets)
-    aliens_check(stats, screen, scores, laser_turret, aliens, bullets)
+        lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu)
+        stats.leveldown(scores)
+    aliens_check(stats, screen, scores, laser_turret, aliens, bullets, menu)
 
 
-def aliens_check(stats, screen, scores, laser_turret, aliens, bullets):
+def aliens_check(stats, screen, scores, laser_turret, aliens, bullets, menu):
     """Проверка на соприкосновение пришельцев с краем экрана"""
     screen_rect = screen.get_rect()
     for alien in aliens.sprites():
         if alien.rect.bottom >= screen_rect.bottom:
-            lt_kill(stats, screen, scores, laser_turret, aliens, bullets)
+            lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu)
             break
 
 

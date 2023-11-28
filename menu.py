@@ -21,7 +21,7 @@ class Menu:
                                                 True,
                                                 self.text_color,
                                                 (0, 0, 0))
-        self.exit_button_rect = self.start_button_img.get_rect()
+        self.exit_button_rect = self.exit_button_img.get_rect()
         self.exit_button_rect.x = self.exit_button_rect.width
         self.exit_button_rect.y = self.exit_button_rect.height
         """Позиции кнопок на экране"""
@@ -29,7 +29,17 @@ class Menu:
                                  self.screen_rect.height // 2 - self.start_button_rect.y // 2)
         self.exit_button_pos = (self.screen_rect.width // 2 - self.exit_button_rect.x // 2,
                                 self.screen_rect.height // 2 - self.exit_button_rect.y // 2 + 100)
+        """Надпись КОНЕЦ ИГРЫ"""
+        self.game_over_img = self.font.render("КОНЕЦ ИГРЫ",
+                                              True,
+                                              self.text_color,
+                                              (0, 0, 0))
+        self.game_over_rect = self.game_over_img.get_rect()
+        self.game_over_rect.center = self.screen_rect.center
 
     def show_buttons(self):
         self.screen.blit(self.start_button_img, self.start_button_pos)
         self.screen.blit(self.exit_button_img, self.exit_button_pos)
+
+    def show_over(self):
+        self.screen.blit(self.game_over_img, self.game_over_rect)

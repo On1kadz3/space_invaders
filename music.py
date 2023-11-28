@@ -1,5 +1,6 @@
 import pygame
 
+
 def run_music(music_name):
     pygame.mixer.music.load(music_name)
     pygame.mixer.music.play(-1)

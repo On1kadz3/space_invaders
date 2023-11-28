@@ -26,12 +26,18 @@ class LaserTurret(Sprite):
         """Отрисовка мини-пушки"""
         self.screen.blit(self.mini_image, self.mini_rect)
 
-    def update_LT(self):
+    def update_LT(self, stats):
         # Обновление позиции
-        if self.move_right and self.rect.right < self.screen_rect.right:
-            self.center += 2
-        if self.move_left and self.rect.left > self.screen_rect.left:
-            self.center -= 2
+        if stats.level <= 3:
+            if self.move_right and self.rect.right < self.screen_rect.right:
+                self.center += 3
+            if self.move_left and self.rect.left > self.screen_rect.left:
+                self.center -= 3
+        else:
+            if self.move_right and self.rect.right < self.screen_rect.right:
+                self.center += 3 * 0.7 * stats.level
+            if self.move_left and self.rect.left > self.screen_rect.left:
+                self.center -= 3 * 0.7 * stats.level
 
         self.rect.centerx = self.center
 

@@ -20,7 +20,7 @@ class Alien(pygame.sprite.Sprite):
         """Отрисовка пришельца на экране"""
         self.screen.blit(self.image, self.rect)
 
-    def update(self):
+    def update(self, stats):
         """Перемещение пришельцев"""
-        self.y += 0.2
+        self.y += 0.2 * 0.35 * stats.level
         self.rect.y = self.y
