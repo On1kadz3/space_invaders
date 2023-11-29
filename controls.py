@@ -1,17 +1,21 @@
 import pygame
 import sys
 
-import stats
 from bullet import Bullet
 from alien import Alien
 import time
 
-mute_sound = 0
+mute_sound = False
+mute_music = False
+paused = False
+bullet_lvl = 1
+bullet_upped = False
+counter = 0
 
 
 def events(screen, laser_turret, bullets, stats, menu):
     # Обработка событий
-    global mute_sound
+    global mute_sound, paused, mute_music, bullet_lvl, bullet_upped
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -23,18 +27,31 @@ def events(screen, laser_turret, bullets, stats, menu):
             elif event.key == pygame.K_LEFT:
                 laser_turret.move_left = True
             elif event.key == pygame.K_m:
-                mute_sound += 1
+                mute_sound = not mute_sound
             # Выстрел
-            elif event.key == pygame.K_UP:
-                new_bullet = Bullet(screen, laser_turret)
-                if (mute_sound % 2) == 1:
+            elif event.key == pygame.K_SPACE and not paused and stats.run_game:
+                bullet_lvl = 1  # + (stats.score // 25000)
+                if bullet_upped:
+                    for new_bullet in range(bullet_lvl):
+                        new_bullet = Bullet(screen, laser_turret, stats)
+                        new_bullet.upgrade()
+                        bullets.add(new_bullet)
+                else:
+                    for new_bullet in range(bullet_lvl):
+                        new_bullet = Bullet(screen, laser_turret, stats)
+                        bullets.add(new_bullet)
+                if not mute_sound:
                     pygame.mixer.Sound("sounds/laser-piu.wav").play()
-                bullets.add(new_bullet)
             # пауза музыки
-            elif event.key == pygame.K_SPACE:
-                pygame.mixer.music.pause()
             elif event.key == pygame.K_RSHIFT:
-                pygame.mixer.music.unpause()
+                mute_music = not mute_music
+                if mute_music:
+                    pygame.mixer.music.pause()
+                else:
+                    pygame.mixer.music.unpause()
+            elif (event.key == pygame.K_p or event.key == pygame.K_ESCAPE) and stats.run_game:
+                pygame.mixer.Sound("sounds/pause.wav").play().set_volume(0.5)
+                paused = not paused
         elif event.type == pygame.KEYUP:
             # Право
             if event.key == pygame.K_RIGHT:
@@ -42,33 +59,50 @@ def events(screen, laser_turret, bullets, stats, menu):
             # Лево
             elif event.key == pygame.K_LEFT:
                 laser_turret.move_left = False
-        elif event.type == pygame.MOUSEBUTTONDOWN and not stats.run_game:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
-            start_button_pos = menu.start_button_pos
-            exit_button_pos = menu.exit_button_pos
-            start_button = menu.start_button_rect
-            exit_button = menu.exit_button_rect
-            if start_button_pos[0] <= mouse_pos[0] <= start_button_pos[0] + start_button.width and \
-                    start_button_pos[1] <= mouse_pos[1] <= start_button_pos[1] + start_button.height:
-                stats.start_game()
-            elif exit_button_pos[0] <= mouse_pos[0] <= exit_button_pos[0] + exit_button.width and \
-                    exit_button_pos[1] <= mouse_pos[1] <= exit_button_pos[1] + exit_button.height:
-                sys.exit()
+            if not stats.run_game:
+                start_button_pos = menu.start_button_pos
+                exit_button_pos = menu.exit_button_pos
+                start_button = menu.start_button_rect
+                exit_button = menu.exit_button_rect
+                if start_button_pos[0] <= mouse_pos[0] <= start_button_pos[0] + start_button.width and \
+                        start_button_pos[1] <= mouse_pos[1] <= start_button_pos[1] + start_button.height:
+                    stats.start_game()
+                elif exit_button_pos[0] <= mouse_pos[0] <= exit_button_pos[0] + exit_button.width and \
+                        exit_button_pos[1] <= mouse_pos[1] <= exit_button_pos[1] + exit_button.height:
+                    sys.exit()
+            elif stats.run_game and stats.choose_perk == 1:
+                bullet_upgrade_btn = menu.up_bullets_rect
+                slow_aliens_btn = menu.slow_aliens_rect
+                if bullet_upgrade_btn[0] <= mouse_pos[0] <= bullet_upgrade_btn[0] + bullet_upgrade_btn.width and \
+                        bullet_upgrade_btn[1] <= mouse_pos[1] <= bullet_upgrade_btn[1] + bullet_upgrade_btn.height:
+                    stats.upgraded = True
+                    stats.choose_perk = False
+                if slow_aliens_btn[0] <= mouse_pos[0] <= slow_aliens_btn[0] + slow_aliens_btn.width and \
+                        slow_aliens_btn[1] <= mouse_pos[1] <= slow_aliens_btn[1] + slow_aliens_btn.height:
+                    stats.choose_perk = False
 
 
-def start_screen(bg_color, screen, menu):
+def start_screen(bg_color, screen, menu):  # Начальный экран
     screen.fill(bg_color)
     menu.show_buttons()
     pygame.display.flip()
 
 
-def game_over_screen(bg_color, screen, menu):
+def game_over_screen(bg_color, screen, menu):  # Игра окончена
     screen.fill(bg_color)
     menu.show_over()
     pygame.display.flip()
 
 
-def screen_update(bg_color, screen, stats, scores, menu, laser_turret, aliens, bullets, FPS):
+def choosing_perks_screen(bg_color, screen, menu):  # Экран выбора перков
+    screen.fill(bg_color)
+    menu.choosing_perks()
+    pygame.display.flip()
+
+
+def screen_update(bg_color, screen, scores, laser_turret, aliens, bullets, fps):
     """ Обновление экрана """
     screen.fill(bg_color)
     scores.show_score()
@@ -77,11 +111,12 @@ def screen_update(bg_color, screen, stats, scores, menu, laser_turret, aliens, b
     laser_turret.output()
     aliens.draw(screen)
     pygame.display.flip()
-    pygame.time.Clock().tick(FPS)
+    pygame.time.Clock().tick(fps)
 
 
 def update_bullets(screen, stats, scores, aliens, bullets):
     """ Обновление позиции пуль """
+    global counter
     bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
@@ -95,8 +130,12 @@ def update_bullets(screen, stats, scores, aliens, bullets):
         scores.draw_LT()
     if len(aliens) == 0:
         bullets.empty()
-        stats.levelup(scores)
-        create_army(screen, aliens)
+        if stats.level == 2:
+            stats.level_reached = True
+            stats.choose_perk = True
+        else:
+            stats.levelup(scores)
+            create_army(screen, aliens)
 
 
 def lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu):
@@ -122,9 +161,8 @@ def restart_game(scores, stats, aliens, bullets, laser_turret):
     stats.reset_stats()
 
 
-
 def update_aliens(stats, screen, scores, laser_turret, aliens, bullets, menu):
-    # Обновляет позиции инопланетян
+    """Обновляет позиции инопланетян"""
     aliens.update(stats)
     if pygame.sprite.spritecollideany(laser_turret, aliens):
         lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu)

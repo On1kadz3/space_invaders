@@ -3,11 +3,15 @@ import pygame
 
 class Bullet(pygame.sprite.Sprite):
 
-    def __init__(self, screen, laser_turret):
+    def __init__(self, screen, laser_turret, stats):
         # Создание Пули в позиции пушки
         super(Bullet, self).__init__()
         self.screen = screen
-        self.rect = pygame.Rect(0, 0, 2, 10)
+        self.upgraded = stats.upgraded
+        if self.upgraded:
+            self.rect = pygame.Rect(0, 0, 25, 5)
+        else:
+            self.rect = pygame.Rect(0, 0, 600, 5)
         self.color = 0, 183, 239
         self.speed = 9.5
         self.rect.centerx = laser_turret.rect.centerx
@@ -20,5 +24,9 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.y = self.y
 
     def draw_bullet(self):
-        # Отрисовка пули
+        """Отрисовка пули"""
         pygame.draw.rect(self.screen, self.color, self.rect)
+
+    def upgrade(self):
+        """Улучшение пули"""
+        self.upgraded = True

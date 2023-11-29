@@ -11,7 +11,7 @@ class Scores:
         self.screen_rect = screen.get_rect()
         self.stats = stats
         self.text_color = (255, 255, 255)
-        self.font = pygame.font.SysFont(None, 24)
+        self.font = pygame.font.SysFont('OCR A Becker RUS-LAT', 14)
         self.score_to_image()
         self.highscore_to_image()
         self.level_to_image()

@@ -7,9 +7,9 @@ class Menu:
         self.screen = screen
         self.screen_rect = screen.get_rect()
         self.text_color = (255, 255, 255)
-        self.font = pygame.font.SysFont(None, 46)
+        self.font = pygame.font.SysFont('OCR A Becker RUS-LAT', 46)
         """Кнопка "НАЧАТЬ ИГРУ" из текста в изображение"""
-        self.start_button_img = self.font.render("Начать игру!",
+        self.start_button_img = self.font.render("НАЧАТЬ ИГРУ",
                                                  True,
                                                  self.text_color,
                                                  (0, 0, 0))
@@ -17,7 +17,7 @@ class Menu:
         self.start_button_rect.x = self.start_button_rect.width
         self.start_button_rect.y = self.start_button_rect.height
         """Кнопка "ВЫХОД" из текста в изображение"""
-        self.exit_button_img = self.font.render("ВЫХОД",
+        self.exit_button_img = self.font.render("ВЫЙТИ",
                                                 True,
                                                 self.text_color,
                                                 (0, 0, 0))
@@ -36,6 +36,31 @@ class Menu:
                                               (0, 0, 0))
         self.game_over_rect = self.game_over_img.get_rect()
         self.game_over_rect.center = self.screen_rect.center
+        """Кнопка УЛУЧШЕНИЕ ПУЛЬ"""
+        self.up_bullets_img = pygame.image.load("images/bullet-upgrade.png")
+        self.up_bullets_rect = self.up_bullets_img.get_rect()
+        self.up_bullets_rect.center = (self.screen_rect.centerx - 150, self.screen_rect.centery)
+        self.up_bullets_text = self.font.render("ПУЛИ+",
+                                                True,
+                                                self.text_color,
+                                                (0, 0, 0))
+        self.up_bullets_text_rect = self.up_bullets_text.get_rect()
+        self.up_bullets_text_rect.center = (self.up_bullets_rect.centerx, self.up_bullets_rect.centery + 150)
+        """ЗАМЕДЛЕНИЕ ПРИШЕЛЬЦЕВ"""
+        self.slow_aliens_img = pygame.image.load("images/slow_aliens.png")
+        self.slow_aliens_rect = self.up_bullets_img.get_rect()
+        self.slow_aliens_rect.center = (self.screen_rect.centerx + 150, self.screen_rect.centery)
+        self.slow_aliens_text = self.font.render("ПРИШЕЛЬЦЫ--",
+                                                True,
+                                                self.text_color,
+                                                (0, 0, 0))
+        self.slow_aliens_text_rect = self.slow_aliens_text.get_rect()
+        self.slow_aliens_text_rect.center = (self.slow_aliens_rect.centerx, self.slow_aliens_rect.centery + 150)
+        """Текст Выберите навык: """
+        self.choose_perk = self.font.render("ВЫБЕРИТЕ НАВЫК:",
+                                            True,
+                                            self.text_color,
+                                            (0, 0, 0))
 
     def show_buttons(self):
         self.screen.blit(self.start_button_img, self.start_button_pos)
@@ -43,3 +68,9 @@ class Menu:
 
     def show_over(self):
         self.screen.blit(self.game_over_img, self.game_over_rect)
+
+    def choosing_perks(self):
+        self.screen.blit(self.up_bullets_img, self.up_bullets_rect)
+        self.screen.blit(self.up_bullets_text, self.up_bullets_text_rect)
+        self.screen.blit(self.slow_aliens_img, self.slow_aliens_rect)
+        self.screen.blit(self.slow_aliens_text, self.slow_aliens_text_rect)
