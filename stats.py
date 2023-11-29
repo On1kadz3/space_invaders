@@ -11,6 +11,7 @@ class Stats:
         self.start_game()
         self.upgraded = False
         self.game_over = False
+        self.slow_alien = False
         self.run_game = False
         self.choose_perk = False
         self.level_reached = False
@@ -32,10 +33,10 @@ class Stats:
         self.level -= 1
         scores.level_to_image()
 
-    def bullet_up(self, scores):
+    def bullet_up(self):
         self.upgraded = True
 
     def reset_stats(self):
         """статистика, изменяющаяся во время игры"""
-        self.lt_left = 0
+        self.lt_left = 3
         self.score = 0

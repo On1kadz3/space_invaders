@@ -69,8 +69,20 @@ class Menu:
     def show_over(self):
         self.screen.blit(self.game_over_img, self.game_over_rect)
 
-    def choosing_perks(self):
-        self.screen.blit(self.up_bullets_img, self.up_bullets_rect)
-        self.screen.blit(self.up_bullets_text, self.up_bullets_text_rect)
-        self.screen.blit(self.slow_aliens_img, self.slow_aliens_rect)
-        self.screen.blit(self.slow_aliens_text, self.slow_aliens_text_rect)
+    def choosing_perks(self, stats):
+        if stats.upgraded and not stats.slow_alien:
+            self.slow_aliens_rect.center = self.screen_rect.center
+            self.slow_aliens_text_rect.center = (self.slow_aliens_rect.centerx, self.slow_aliens_rect.centery + 150)
+            self.screen.blit(self.slow_aliens_img, self.slow_aliens_rect)
+            self.screen.blit(self.slow_aliens_text, self.slow_aliens_text_rect)
+        elif not stats.upgraded and stats.slow_alien:
+            self.up_bullets_rect.center = self.screen_rect.center
+            self.up_bullets_text_rect.center = (self.up_bullets_rect.centerx, self.up_bullets_rect.centery + 150)
+            self.screen.blit(self.up_bullets_img, self.up_bullets_rect)
+            self.screen.blit(self.up_bullets_text, self.up_bullets_text_rect)
+        elif not stats.upgraded and not stats.slow_alien:
+            self.screen.blit(self.up_bullets_img, self.up_bullets_rect)
+            self.screen.blit(self.up_bullets_text, self.up_bullets_text_rect)
+            self.screen.blit(self.slow_aliens_img, self.slow_aliens_rect)
+            self.screen.blit(self.slow_aliens_text, self.slow_aliens_text_rect)
+

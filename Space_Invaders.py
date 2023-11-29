@@ -34,12 +34,13 @@ def run():
         controls.events(screen, laser_turret, bullets, stats, menu)
         if not controls.paused:
             if stats.run_game:
-                laser_turret.update_lt(stats)
-                controls.screen_update(bg_color, screen, scores, laser_turret, aliens, bullets, FPS)
-                controls.update_bullets(screen, stats, scores, aliens, bullets)
-                controls.update_aliens(stats, screen, scores, laser_turret, aliens, bullets, menu)
-                if stats.level_reached and stats.choose_perk:
-                    controls.choosing_perks_screen(bg_color, screen, menu)
+                if stats.level_reached and stats.choose_perk and (not stats.slow_alien or not stats.upgraded):
+                    controls.choosing_perks_screen(bg_color, screen, menu, stats)
+                else:
+                    laser_turret.update_lt(stats)
+                    controls.screen_update(bg_color, screen, scores, laser_turret, aliens, bullets, FPS)
+                    controls.update_bullets(screen, stats, scores, aliens, bullets)
+                    controls.update_aliens(stats, screen, scores, laser_turret, aliens, bullets, menu)
             elif not stats.run_game and stats.game_over:
                 controls.game_over_screen(bg_color, screen, menu)
                 time.sleep(1.5)

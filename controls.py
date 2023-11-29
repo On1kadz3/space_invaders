@@ -9,7 +9,6 @@ mute_sound = False
 mute_music = False
 paused = False
 bullet_lvl = 1
-bullet_upped = False
 counter = 0
 
 
@@ -31,15 +30,9 @@ def events(screen, laser_turret, bullets, stats, menu):
             # Выстрел
             elif event.key == pygame.K_SPACE and not paused and stats.run_game:
                 bullet_lvl = 1  # + (stats.score // 25000)
-                if bullet_upped:
-                    for new_bullet in range(bullet_lvl):
-                        new_bullet = Bullet(screen, laser_turret, stats)
-                        new_bullet.upgrade()
-                        bullets.add(new_bullet)
-                else:
-                    for new_bullet in range(bullet_lvl):
-                        new_bullet = Bullet(screen, laser_turret, stats)
-                        bullets.add(new_bullet)
+                for new_bullet in range(bullet_lvl):
+                    new_bullet = Bullet(screen, laser_turret, stats)
+                    bullets.add(new_bullet)
                 if not mute_sound:
                     pygame.mixer.Sound("sounds/laser-piu.wav").play()
             # пауза музыки
@@ -81,6 +74,7 @@ def events(screen, laser_turret, bullets, stats, menu):
                     stats.choose_perk = False
                 if slow_aliens_btn[0] <= mouse_pos[0] <= slow_aliens_btn[0] + slow_aliens_btn.width and \
                         slow_aliens_btn[1] <= mouse_pos[1] <= slow_aliens_btn[1] + slow_aliens_btn.height:
+                    stats.slow_alien = True
                     stats.choose_perk = False
 
 
@@ -96,9 +90,9 @@ def game_over_screen(bg_color, screen, menu):  # Игра окончена
     pygame.display.flip()
 
 
-def choosing_perks_screen(bg_color, screen, menu):  # Экран выбора перков
+def choosing_perks_screen(bg_color, screen, menu, stats):  # Экран выбора перков
     screen.fill(bg_color)
-    menu.choosing_perks()
+    menu.choosing_perks(stats)
     pygame.display.flip()
 
 
@@ -130,12 +124,14 @@ def update_bullets(screen, stats, scores, aliens, bullets):
         scores.draw_LT()
     if len(aliens) == 0:
         bullets.empty()
-        if stats.level == 2:
+        stats.levelup(scores)
+        if (stats.level % 3) == 0 and not stats.level == 0 and not stats.level_reached:
             stats.level_reached = True
             stats.choose_perk = True
         else:
-            stats.levelup(scores)
-            create_army(screen, aliens)
+            stats.level_reached = False
+            stats.choose_perk = False
+        create_army(screen, aliens)
 
 
 def lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu):

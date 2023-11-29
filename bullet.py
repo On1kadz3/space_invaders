@@ -7,9 +7,9 @@ class Bullet(pygame.sprite.Sprite):
         # Создание Пули в позиции пушки
         super(Bullet, self).__init__()
         self.screen = screen
-        self.upgraded = stats.upgraded
-        if self.upgraded:
-            self.rect = pygame.Rect(0, 0, 25, 5)
+        self.base_num = 5
+        if stats.upgraded:
+            self.rect = pygame.Rect(0, 0, self.base_num * ((stats.level // 3) + 1), 5)
         else:
             self.rect = pygame.Rect(0, 0, 600, 5)
         self.color = 0, 183, 239
@@ -26,7 +26,3 @@ class Bullet(pygame.sprite.Sprite):
     def draw_bullet(self):
         """Отрисовка пули"""
         pygame.draw.rect(self.screen, self.color, self.rect)
-
-    def upgrade(self):
-        """Улучшение пули"""
-        self.upgraded = True
