@@ -24,7 +24,7 @@ class Alien(pygame.sprite.Sprite):
         self.screen.blit(self.image, self.rect)
 
     def change_modifier(self, stats):
-        self.modifier = 0.002
+        self.modifier = 0.0002
 
     def update(self, stats):
         """Перемещение пришельцев"""

@@ -11,10 +11,9 @@ paused = False
 bullet_lvl = 1
 counter = 0
 
-
 def events(screen, laser_turret, bullets, stats, menu):
     # Обработка событий
-    global mute_sound, paused, mute_music, bullet_lvl, bullet_upped
+    global mute_sound, paused, mute_music, bullet_lvl
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -28,14 +27,14 @@ def events(screen, laser_turret, bullets, stats, menu):
             elif event.key == pygame.K_m:
                 mute_sound = not mute_sound
             # Выстрел
-            elif event.key == pygame.K_SPACE and not paused and stats.run_game:
+            elif event.key == pygame.K_SPACE and not paused and stats.run_game and not stats.choose_perk:
                 bullet_lvl = 1  # + (stats.score // 25000)
                 for new_bullet in range(bullet_lvl):
                     new_bullet = Bullet(screen, laser_turret, stats)
                     bullets.add(new_bullet)
                 if not mute_sound:
                     pygame.mixer.Sound("sounds/laser-piu.wav").play()
-            # пауза музыки
+            # Пауза музыки
             elif event.key == pygame.K_RSHIFT:
                 mute_music = not mute_music
                 if mute_music:
@@ -46,10 +45,10 @@ def events(screen, laser_turret, bullets, stats, menu):
                 pygame.mixer.Sound("sounds/pause.wav").play().set_volume(0.5)
                 paused = not paused
         elif event.type == pygame.KEYUP:
-            # Право
+            # Вправо
             if event.key == pygame.K_RIGHT:
                 laser_turret.move_right = False
-            # Лево
+            # Влево
             elif event.key == pygame.K_LEFT:
                 laser_turret.move_left = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -65,7 +64,7 @@ def events(screen, laser_turret, bullets, stats, menu):
                 elif exit_button_pos[0] <= mouse_pos[0] <= exit_button_pos[0] + exit_button.width and \
                         exit_button_pos[1] <= mouse_pos[1] <= exit_button_pos[1] + exit_button.height:
                     sys.exit()
-            elif stats.run_game and stats.choose_perk == 1:
+            elif stats.run_game and stats.choose_perk:
                 bullet_upgrade_btn = menu.up_bullets_rect
                 slow_aliens_btn = menu.slow_aliens_rect
                 if bullet_upgrade_btn[0] <= mouse_pos[0] <= bullet_upgrade_btn[0] + bullet_upgrade_btn.width and \
@@ -125,13 +124,14 @@ def update_bullets(screen, stats, scores, aliens, bullets):
     if len(aliens) == 0:
         bullets.empty()
         stats.levelup(scores)
-        if (stats.level % 3) == 0 and not stats.level == 0 and not stats.level_reached:
+        if (stats.level % 2) == 0 and not stats.level == 0 and not stats.level_reached and \
+                not (stats.upgraded and stats.slow_alien):
             stats.level_reached = True
             stats.choose_perk = True
         else:
             stats.level_reached = False
             stats.choose_perk = False
-        create_army(screen, aliens)
+        create_army(screen, aliens, stats)
 
 
 def lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu):
@@ -139,7 +139,7 @@ def lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu):
     if stats.lt_left > 0:
         stats.lt_left -= 1
         scores.draw_LT()
-        create_army(screen, aliens)
+        create_army(screen, aliens, stats)
         laser_turret.create_lt()
         time.sleep(1.5)
         aliens.empty()
@@ -175,18 +175,28 @@ def aliens_check(stats, screen, scores, laser_turret, aliens, bullets, menu):
             break
 
 
-def create_army(screen, aliens):
+def create_army(screen, aliens, stats):
     """Создание армии пришельцев"""
     alien = Alien(screen)
     alien_width = alien.rect.width
     number_alien_x = int((700 - 2 * alien_width) / alien_width)
     alien_height = alien.rect.height
     number_alien_y = int((800 - 100 - 2 * alien_height) / alien_height)
-
-    for num_of_rows in range(number_alien_y - 2):
-        for num_of_alien in range(number_alien_x):
+    center_modifier = 4
+    if (6 - stats.level // 4) >= 4:
+        rows_modifier = 6 - stats.level // 4
+    else:
+        rows_modifier = 4
+    if (center_modifier - stats.level // 2) >= 2:
+        if (stats.level // 2) % 2 == 0:
+            columns_modifier = center_modifier - (stats.level // 2)
+        else:
+            columns_modifier = center_modifier - 1 - (stats.level // 2)
+    else: columns_modifier = 0
+    for num_of_rows in range(number_alien_y - rows_modifier):
+        for num_of_alien in range(number_alien_x - columns_modifier):
             alien = Alien(screen)
-            alien.x = alien_width + (alien_width * num_of_alien)
+            alien.x = (columns_modifier // 2 + 1) * alien_width + (alien_width * num_of_alien)
             alien.y = alien_height + (alien_height * num_of_rows) + 20
             alien.rect.x = alien.x
             alien.rect.y = alien.rect.height + (alien.rect.height * num_of_rows)

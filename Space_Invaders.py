@@ -26,8 +26,8 @@ def run():
     laser_turret = LaserTurret(screen)
     bullets = Group()
     aliens = Group()
-    controls.create_army(screen, aliens)
     stats = Stats()
+    controls.create_army(screen, aliens, stats)
     scores = Scores(screen, stats)
     menu = Menu(screen)
     while True:

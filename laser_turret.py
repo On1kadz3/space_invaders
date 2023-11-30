@@ -4,7 +4,7 @@ from pygame.sprite import Sprite
 
 class LaserTurret(Sprite):
     def __init__(self, screen):
-        # Инициализация пушки
+        """ Инициализация пушки """
         super(LaserTurret, self).__init__()
         self.screen = screen
         self.image = pygame.image.load("images/laser-turret.png")
@@ -19,7 +19,7 @@ class LaserTurret(Sprite):
         self.move_left = False
 
     def output(self):
-        # Отрисовка пушки
+        """ Отрисовка пушки """
         self.screen.blit(self.image, self.rect)
 
     def mini_output(self):
@@ -27,7 +27,7 @@ class LaserTurret(Sprite):
         self.screen.blit(self.mini_image, self.mini_rect)
 
     def update_lt(self, stats):
-        # Обновление позиции
+        """ Обновление позиции """
         if stats.level <= 3:
             if self.move_right and self.rect.right < self.screen_rect.right:
                 self.center += 3
