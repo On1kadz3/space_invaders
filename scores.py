@@ -15,7 +15,7 @@ class Scores:
         self.score_to_image()
         self.highscore_to_image()
         self.level_to_image()
-        self.draw_LT()
+        self.draw_lt()
 
     def score_to_image(self):
         """ Текст счёта в графичесоке изображение """
@@ -46,14 +46,27 @@ class Scores:
         self.level_rect.left = self.screen_rect.left + 25
         self.level_rect.top = self.score_rect.bottom + 10
 
-    def draw_LT(self):
+    def draw_lt(self):
         """кол-во жизней"""
         self.lts = Group()
-        for lt_number in range(self.stats.lt_left):
+        if self.stats.lt_left <= 4:
+            for lt_number in range(self.stats.lt_left):
+                lt = LaserTurret(self.screen)
+                lt.image = lt.mini_image
+                lt.rect.x = self.screen_rect.right - (lt_number + 1) * lt.mini_rect.width
+                lt.rect.y = 15
+                self.lts.add(lt)
+        else:
             lt = LaserTurret(self.screen)
             lt.image = lt.mini_image
-            lt.rect.x = self.screen_rect.right - (lt_number + 1) * lt.mini_rect.width
+            lt.rect.x = self.screen_rect.right - lt.mini_rect.width
             lt.rect.y = 15
+            self.lt_left_text = self.font.render(str(self.stats.lt_left) + "x",
+                                                 True, self.text_color,
+                                                 (0, 0, 0))
+            self.lt_left_text_rect = self.lt_left_text.get_rect()
+            self.lt_left_text_rect.right = lt.rect.left - 10
+            self.lt_left_text_rect.y = 24
             self.lts.add(lt)
 
     def show_score(self):
@@ -61,4 +74,8 @@ class Scores:
         self.screen.blit(self.score_image, self.score_rect)
         self.screen.blit(self.hi_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
-        self.lts.draw(self.screen)
+        if self.stats.lt_left <= 4:
+            self.lts.draw(self.screen)
+        else:
+            self.lts.draw(self.screen)
+            self.screen.blit(self.lt_left_text, self.lt_left_text_rect)

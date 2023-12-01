@@ -11,7 +11,6 @@ class Alien(pygame.sprite.Sprite):
         self.screen = screen
         num = randint(1, 2)
         self.image = pygame.image.load(f'images/alien{num}.png')
-        self.slowed = False
         self.modifier = 1
         self.rect = self.image.get_rect()
         self.rect.x = self.rect.width
@@ -23,12 +22,12 @@ class Alien(pygame.sprite.Sprite):
         """Отрисовка пришельца на экране"""
         self.screen.blit(self.image, self.rect)
 
-    def change_modifier(self, stats):
-        self.modifier = 0.0002
+    def change_modifier(self):
+        self.modifier = 3
 
     def update(self, stats):
         """Перемещение пришельцев"""
-        if self.slowed:
-            self.y += 0.2 * 0.35 * stats.level * self.modifier
-        self.y += 0.2 * 0.35 * stats.level
+        if stats.slow_alien:
+            self.change_modifier()
+        self.y += (0.15 * 0.35 * stats.level) / self.modifier
         self.rect.y = self.y

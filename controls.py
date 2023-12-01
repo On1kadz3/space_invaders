@@ -5,15 +5,13 @@ from bullet import Bullet
 from alien import Alien
 import time
 
-mute_sound = False
-mute_music = False
-paused = False
-bullet_lvl = 1
-counter = 0
+mute_sound, mute_music, paused = False, False, False
+bullet_lvl, counter = 1, 0  # accuracy_counter, bullet_counter = 1, 0, 0, 0
+
 
 def events(screen, laser_turret, bullets, stats, menu):
     # Обработка событий
-    global mute_sound, paused, mute_music, bullet_lvl
+    global mute_sound, paused, mute_music, bullet_lvl  # , bullet_counter
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -31,6 +29,7 @@ def events(screen, laser_turret, bullets, stats, menu):
                 bullet_lvl = 1  # + (stats.score // 25000)
                 for new_bullet in range(bullet_lvl):
                     new_bullet = Bullet(screen, laser_turret, stats)
+                    # bullet_counter += 1
                     bullets.add(new_bullet)
                 if not mute_sound:
                     pygame.mixer.Sound("sounds/laser-piu.wav").play()
@@ -84,6 +83,8 @@ def start_screen(bg_color, screen, menu):  # Начальный экран
 
 
 def game_over_screen(bg_color, screen, menu):  # Игра окончена
+    pygame.mixer.music.stop()
+    pygame.mixer.Sound("sounds/game_over.wav").play().set_volume(0.5)
     screen.fill(bg_color)
     menu.show_over()
     pygame.display.flip()
@@ -109,22 +110,27 @@ def screen_update(bg_color, screen, scores, laser_turret, aliens, bullets, fps):
 
 def update_bullets(screen, stats, scores, aliens, bullets):
     """ Обновление позиции пуль """
-    global counter
+    global counter  # , accuracy_counter
     bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
+            # accuracy_counter += 1
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     if collisions:
         for aliens in collisions.values():
             stats.score += int(50 * len(aliens) * stats.level * 0.5)
+            if counter - stats.score // 100000 < 0:
+                counter += 1
+                stats.lt_left += 1
+                pygame.mixer.Sound("sounds/1up.wav").play().set_volume(0.5)
         scores.score_to_image()
         check_hi_score(stats, scores)
-        scores.draw_LT()
+        scores.draw_lt()
     if len(aliens) == 0:
         bullets.empty()
         stats.levelup(scores)
-        if (stats.level % 2) == 0 and not stats.level == 0 and not stats.level_reached and \
+        if (stats.level % 5) == 0 and not stats.level == 0 and not stats.level_reached and \
                 not (stats.upgraded and stats.slow_alien):
             stats.level_reached = True
             stats.choose_perk = True
@@ -138,7 +144,7 @@ def lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu):
     """Столкновение пушки и пришельцев"""
     if stats.lt_left > 0:
         stats.lt_left -= 1
-        scores.draw_LT()
+        scores.draw_lt()
         create_army(screen, aliens, stats)
         laser_turret.create_lt()
         time.sleep(1.5)
@@ -150,7 +156,7 @@ def lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu):
 
 
 def restart_game(scores, stats, aliens, bullets, laser_turret):
-    scores.draw_LT()
+    scores.draw_lt()
     aliens.empty()
     bullets.empty()
     laser_turret.create_lt()
@@ -192,7 +198,8 @@ def create_army(screen, aliens, stats):
             columns_modifier = center_modifier - (stats.level // 2)
         else:
             columns_modifier = center_modifier - 1 - (stats.level // 2)
-    else: columns_modifier = 0
+    else:
+        columns_modifier = 0
     for num_of_rows in range(number_alien_y - rows_modifier):
         for num_of_alien in range(number_alien_x - columns_modifier):
             alien = Alien(screen)
