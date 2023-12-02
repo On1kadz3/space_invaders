@@ -6,6 +6,7 @@ class Stats:
 
     def __init__(self):
         """Инициализания статистики"""
+        self.accuracy = None
         self.level = None
         self.reset_stats()
         self.start_game()
@@ -21,6 +22,10 @@ class Stats:
     def start_game(self):
         self.level = 0
         self.run_game = True
+
+    def accuracy_count(self, bullet_counter, accuracy_counter):
+        self.accuracy = accuracy_counter / bullet_counter
+        self.accuracy = int((1 - round(self.accuracy, 2)) * 100)
 
     def over_game(self):
         self.game_over = True
@@ -38,5 +43,5 @@ class Stats:
 
     def reset_stats(self):
         """статистика, изменяющаяся во время игры"""
-        self.lt_left = 3
+        self.lt_left = 0
         self.score = 0

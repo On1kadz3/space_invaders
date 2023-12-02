@@ -6,12 +6,12 @@ from alien import Alien
 import time
 
 mute_sound, mute_music, paused = False, False, False
-bullet_lvl, counter = 1, 0  # accuracy_counter, bullet_counter = 1, 0, 0, 0
+bullet_lvl, counter, accuracy_counter, bullet_counter = 1, 0, 0, 0
 
 
 def events(screen, laser_turret, bullets, stats, menu):
     # Обработка событий
-    global mute_sound, paused, mute_music, bullet_lvl  # , bullet_counter
+    global mute_sound, paused, mute_music, bullet_lvl, bullet_counter
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -29,7 +29,7 @@ def events(screen, laser_turret, bullets, stats, menu):
                 bullet_lvl = 1  # + (stats.score // 25000)
                 for new_bullet in range(bullet_lvl):
                     new_bullet = Bullet(screen, laser_turret, stats)
-                    # bullet_counter += 1
+                    bullet_counter += 1
                     bullets.add(new_bullet)
                 if not mute_sound:
                     pygame.mixer.Sound("sounds/laser-piu.wav").play()
@@ -82,12 +82,18 @@ def start_screen(bg_color, screen, menu):  # Начальный экран
     pygame.display.flip()
 
 
-def game_over_screen(bg_color, screen, menu):  # Игра окончена
+def game_over_screen(bg_color, screen, menu, stats):  # Игра окончена
+    global paused
     pygame.mixer.music.stop()
     pygame.mixer.Sound("sounds/game_over.wav").play().set_volume(0.5)
+    stats.accuracy_count(bullet_counter, accuracy_counter)
     screen.fill(bg_color)
-    menu.show_over()
+    menu.show_over(stats)
     pygame.display.flip()
+    time.sleep(6.5)
+    pygame.mixer.music.load("sounds/megalovania.mp3")
+    pygame.mixer.music.play(-1)
+    paused = False
 
 
 def choosing_perks_screen(bg_color, screen, menu, stats):  # Экран выбора перков
@@ -110,12 +116,12 @@ def screen_update(bg_color, screen, scores, laser_turret, aliens, bullets, fps):
 
 def update_bullets(screen, stats, scores, aliens, bullets):
     """ Обновление позиции пуль """
-    global counter  # , accuracy_counter
+    global counter, accuracy_counter
     bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-            # accuracy_counter += 1
+            accuracy_counter += 1
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     if collisions:
         for aliens in collisions.values():
@@ -185,14 +191,14 @@ def create_army(screen, aliens, stats):
     """Создание армии пришельцев"""
     alien = Alien(screen)
     alien_width = alien.rect.width
-    number_alien_x = int((700 - 2 * alien_width) / alien_width)
+    number_alien_x = int((screen.get_width() - 2 * alien_width) / alien_width)
     alien_height = alien.rect.height
-    number_alien_y = int((800 - 100 - 2 * alien_height) / alien_height)
+    number_alien_y = int((screen.get_height() - 100 - 2 * alien_height) / alien_height)
     center_modifier = 4
-    if (6 - stats.level // 4) >= 4:
+    if (6 - stats.level // 4) >= 3:
         rows_modifier = 6 - stats.level // 4
     else:
-        rows_modifier = 4
+        rows_modifier = 3
     if (center_modifier - stats.level // 2) >= 2:
         if (stats.level // 2) % 2 == 0:
             columns_modifier = center_modifier - (stats.level // 2)

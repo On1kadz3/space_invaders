@@ -12,7 +12,7 @@ from scores import Scores
 import music
 
 WIDTH = 700
-HEIGHT = 800
+HEIGHT = 750
 FPS = 60
 
 
@@ -42,8 +42,7 @@ def run():
                     controls.update_bullets(screen, stats, scores, aliens, bullets)
                     controls.update_aliens(stats, screen, scores, laser_turret, aliens, bullets, menu)
             elif not stats.run_game and stats.game_over:
-                controls.game_over_screen(bg_color, screen, menu)
-                time.sleep(6.5)
+                controls.game_over_screen(bg_color, screen, menu, stats)
                 controls.restart_game(scores, stats, aliens, bullets, laser_turret)
                 stats.game_over = False
             elif not stats.run_game and not stats.game_over:

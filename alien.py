@@ -9,7 +9,7 @@ class Alien(pygame.sprite.Sprite):
         """Инициализация и задача начальной позиции"""
         super(Alien, self).__init__()
         self.screen = screen
-        num = randint(1, 2)
+        num = randint(1, 3)
         self.image = pygame.image.load(f'images/alien{num}.png')
         self.modifier = 1
         self.rect = self.image.get_rect()
@@ -29,5 +29,5 @@ class Alien(pygame.sprite.Sprite):
         """Перемещение пришельцев"""
         if stats.slow_alien:
             self.change_modifier()
-        self.y += (0.15 * 0.35 * stats.level) / self.modifier
+        self.y += (5 * 0.35 * stats.level) / self.modifier
         self.rect.y = self.y

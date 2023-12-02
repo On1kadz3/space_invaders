@@ -36,6 +36,7 @@ class Menu:
                                               (0, 0, 0))
         self.game_over_rect = self.game_over_img.get_rect()
         self.game_over_rect.center = self.screen_rect.center
+        self.game_over_rect.centery -= 20
         """Кнопка УЛУЧШЕНИЕ ПУЛЬ"""
         self.up_bullets_img = pygame.image.load("images/bullet-upgrade.png")
         self.up_bullets_rect = self.up_bullets_img.get_rect()
@@ -66,8 +67,16 @@ class Menu:
         self.screen.blit(self.start_button_img, self.start_button_pos)
         self.screen.blit(self.exit_button_img, self.exit_button_pos)
 
-    def show_over(self):
+    def show_over(self, stats):
         self.screen.blit(self.game_over_img, self.game_over_rect)
+        self.accuracy_stat = self.font.render("Точность: "+str(stats.accuracy)+"%",
+                                              True,
+                                              self.text_color,
+                                              (0, 0, 0))
+        self.accuracy_stat_rect = self.accuracy_stat.get_rect()
+        self.accuracy_stat_rect.top = self.game_over_rect.bottom
+        self.accuracy_stat_rect.centerx = self.game_over_rect.centerx
+        self.screen.blit(self.accuracy_stat, self.accuracy_stat_rect)
 
     def choosing_perks(self, stats):
         if stats.upgraded and not stats.slow_alien:
