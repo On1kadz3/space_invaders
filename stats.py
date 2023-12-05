@@ -43,5 +43,5 @@ class Stats:
 
     def reset_stats(self):
         """статистика, изменяющаяся во время игры"""
-        self.lt_left = 0
+        self.lt_left = 3
         self.score = 0

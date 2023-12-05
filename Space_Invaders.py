@@ -1,5 +1,3 @@
-import time
-
 import controls
 import pygame
 import pygame.font
