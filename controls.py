@@ -81,6 +81,12 @@ def start_screen(bg_color, screen, menu):  # Начальный экран
     menu.show_buttons()
     pygame.display.flip()
 
+def win_screen(bg_color, screen, menu, stats, laser_turret):
+    screen.fill(bg_color)
+    laser_turret.update_lt(stats)
+    if laser_turret.engine_rect.bottom < laser_turret.screen_rect.top:
+        menu.win(bg_color)
+
 
 def game_over_screen(bg_color, screen, menu, stats):  # Игра окончена
     global paused
@@ -135,7 +141,6 @@ def update_bullets(screen, stats, scores, aliens, bullets):
         scores.draw_lt()
     if len(aliens) == 0:
         bullets.empty()
-        stats.levelup(scores)
         if (stats.level % 5) == 0 and not stats.level == 0 and not stats.level_reached and \
                 not (stats.upgraded and stats.slow_alien):
             stats.level_reached = True
@@ -143,7 +148,9 @@ def update_bullets(screen, stats, scores, aliens, bullets):
         else:
             stats.level_reached = False
             stats.choose_perk = False
-        create_army(screen, aliens, stats)
+        if stats.level != 31:
+            stats.levelup(scores)
+            create_army(screen, aliens, stats)
 
 
 def lt_kill(stats, screen, scores, laser_turret, aliens, bullets, menu):

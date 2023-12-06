@@ -63,6 +63,20 @@ class Menu:
                                             self.text_color,
                                             (0, 0, 0))
 
+        self.win_img = self.font.render("Поздравляю с победой!\nУвидимся в следующий раз ;)",
+                                                 True,
+                                                 self.text_color,
+                                                 (0, 0, 0))
+        self.win_rect = self.win_img.get_rect()
+        self.win_rect.x = self.win_rect.width
+        self.win_rect.y = self.win_rect.height
+
+    def win(self):
+        self.screen.blit(self.win_img, self.win_rect)
+        self.exit_button_rect.top = self.win_rect.bottom + 10
+        self.screen.blit(self.exit_button_img, self.exit_button_rect)
+
+
     def show_buttons(self):
         self.screen.blit(self.start_button_img, self.start_button_pos)
         self.screen.blit(self.exit_button_img, self.exit_button_pos)

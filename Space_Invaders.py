@@ -39,13 +39,17 @@ def run():
                     controls.screen_update(bg_color, screen, scores, laser_turret, aliens, bullets, FPS)
                     controls.update_bullets(screen, stats, scores, aliens, bullets)
                     controls.update_aliens(stats, screen, scores, laser_turret, aliens, bullets, menu)
-            elif not stats.run_game and stats.game_over:
-                controls.game_over_screen(bg_color, screen, menu, stats)
-                controls.restart_game(scores, stats, aliens, bullets, laser_turret)
-                stats.game_over = False
-            elif not stats.run_game and not stats.game_over:
-                controls.start_screen(bg_color, screen, menu)
-                controls.restart_game(scores, stats, aliens, bullets, laser_turret)
+            else:
+                if stats.game_over:
+                    controls.game_over_screen(bg_color, screen, menu, stats)
+                    controls.restart_game(scores, stats, aliens, bullets, laser_turret)
+                    stats.game_over = False
+                elif not stats.game_over and not stats.win_game:
+                    controls.start_screen(bg_color, screen, menu)
+                    controls.restart_game(scores, stats, aliens, bullets, laser_turret)
+                else:
+                    controls.win_screen(bg_color, screen, menu, stats, laser_turret)
+
 
 
 run()

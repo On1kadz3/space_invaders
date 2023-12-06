@@ -10,6 +10,7 @@ class Stats:
         self.level = None
         self.reset_stats()
         self.start_game()
+        self.win_game = False
         self.upgraded = False
         self.game_over = False
         self.slow_alien = False
@@ -20,7 +21,7 @@ class Stats:
             self.highscore = int(f.readline())
 
     def start_game(self):
-        self.level = 0
+        self.level = 29
         self.run_game = True
 
     def accuracy_count(self, bullet_counter, accuracy_counter):
