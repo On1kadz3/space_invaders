@@ -24,7 +24,9 @@ class Stats:
         self.run_game = True
 
     def accuracy_count(self, bullet_counter, accuracy_counter):
-        self.accuracy = accuracy_counter / bullet_counter
+        try: self.accuracy = accuracy_counter / bullet_counter
+        except ZeroDivisionError as e:
+            self.accuracy = 1
         self.accuracy = int((1 - round(self.accuracy, 2)) * 100)
 
     def over_game(self):
@@ -43,5 +45,5 @@ class Stats:
 
     def reset_stats(self):
         """статистика, изменяющаяся во время игры"""
-        self.lt_left = 3
+        self.lt_left = 0
         self.score = 0

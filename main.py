@@ -319,7 +319,8 @@ class Stats:
         self.run_game = True
 
     def accuracy_count(self, ch):
-        self.accuracy = ch.accuracy_counter / ch.bullet_counter
+        try: self.accuracy = ch.accuracy_counter / ch.bullet_counter
+        except ZeroDivisionError as e: self.accuracy = 1
         self.accuracy = int((1 - round(self.accuracy, 2)) * 100)
 
     def over_game(self):
